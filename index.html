@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html ng-app="stockApp">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Las delicias de la Yaya</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+    <body ng-controller="mainCtrl as $ctrl">
+        <div class="container-fluid">
+            <h1 class="alert alert-info">LAS DELICIAS DE LA YAYA</h1>
+            <hr>
+            <div class="row">
+                <div class="col col-lg-8" style="border-right:1px solid gray">
+                    <h3 class="alert alert-warning">STOCK ACTUAL</h3>
+                    <div class="row">
+
+                        <div class="col col-lg-6">
+                            <button type="button" class="btn btn-success btn-block" style="height:80px" ng-click="$ctrl.pedido = false" name="button"><span class="glyphicon glyphicon-user"></span> MESÓN</button>
+                        </div>
+                        <div class="col col-lg-6">
+                            <button type="button" class="btn btn-primary btn-block" style="height:80px" ng-click="$ctrl.pedido = true" name="button"><span class="glyphicon glyphicon-list"></span> PEDIDO</button>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+
+                    </div>
+                    <hr>
+                    <div class="row">
+
+                        <div class="col col-lg-3" ng-repeat="empanada in $ctrl.empanadas" style="padding-bottom:50px">
+
+                            <button type="button" ng-click="$ctrl.seleccionar(empanada,$index)" class="btn btn-default btn-lg" name="button" ng-disabled="empanada.stock<=0" ng-class="{'btn-warning':empanada.stock<11, 'btn-danger':empanada.stock<6 }" style="height:140px;width:100%;">
+                                <p style="word-wrap: break-word;">{{empanada.nombre}}</p>
+                                <strong>({{empanada.stock}})</strong>
+                            </button>
+                            <br>
+                            <br>
+                            <div class="input-group">
+                              <span class="input-group-btn">
+                                  <button class="btn btn-default" ng-click="empanada.modificar = !empanada.modificar" type="button">Stock!</button>
+                              </span>
+                              <input type="number" class="form-control" enter="empanada.modificar = !empanada.modificar" ng-model="empanada.stock" id="stock" ng-disabled="!empanada.modificar" placeholder="Stock...">
+                            </div><!-- /input-group -->
+                        </div>
+                        <div class="clearfix">
+
+                        </div>
+                        <hr>
+                        <div class="col-lg-6 pull-right" ng-show="!$ctrl.pedido">
+                            <label for="cantidad">CANTIDAD MESÓN</label>
+                            <div class="input-group">
+                              <span class="input-group-addon" id="sizing-addon1">{{$ctrl.tipo.nombre}}</span>
+                              <input type="number" enter="$ctrl.agregar(true)" class="form-control" ng-model="$ctrl.cantidad" id="cantidadMeson" ng-disabled="$ctrl.tipo.nombre===undefined" placeholder="Ingrese cantidad a vender">
+                              <span class="input-group-btn">
+                                <button class="btn btn-success" ng-click="$ctrl.agregar(true)" ng-disabled="$ctrl.cantidad > $ctrl.tipo.stock || $ctrl.tipo.nombre===undefined || $ctrl.cantidad<=0 || $ctrl.cantidad===''" type="button">AGREGAR</button>
+                              </span>
+                            </div><!-- /input-group -->
+                            <p class="alert alert-danger" ng-show="$ctrl.existeMsg">
+                            Venta ya esta ingresada</p>
+                        </div><!-- /.col-lg-6 -->
+                        <div class="row" ng-show="$ctrl.pedido">
+                            <div class="col-lg-6 pull-left">
+                                <h4>Items pedido</h4>
+                                <ul>
+                                    <li ng-repeat="item in $ctrl.itemsPedido track by $index">
+                                        {{item.nombre}} ----> <strong>{{item.cantidad}}</strong> <button type="button" class="btn btn-xs btn-danger" ng-click="$ctrl.borrarElementoPedido(item.id,$index)" name="button">Quitar</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-6 pull-right">
+
+                                <label for="cantidadPedido">CANTIDAD PEDIDO</label>
+                                <div class="input-group">
+                                  <span class="input-group-addon" id="sizing-addon1"><strong>{{$ctrl.tipo.nombre}}</strong></span>
+                                  <input type="number" enter="$ctrl.agregarPedido($ctrl.cantidadPedido > $ctrl.tipo.stock || $ctrl.tipo.nombre===undefined || $ctrl.cantidadPedido<=0 || $ctrl.cantidadPedido==='',$ctrl.tipo.nombre,$ctrl.tipo.precio,$ctrl.tipo.id)" class="form-control" ng-model="$ctrl.cantidadPedido" id="cantidadPedido" ng-disabled="$ctrl.tipo.nombre===undefined" placeholder="Ingrese cantidad a vender">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" ng-click="$ctrl.agregarPedido(true,$ctrl.tipo.nombre,$ctrl.tipo.precio,$ctrl.tipo.id)" ng-disabled="$ctrl.cantidadPedido > $ctrl.tipo.stock || $ctrl.tipo.nombre===undefined || $ctrl.cantidadPedido<=0 || $ctrl.cantidadPedido===''" type="button">AGREGAR</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <p class="alert alert-danger" ng-show="$ctrl.existeMsg">
+                                Pedido ya esta ingresado</p>
+                                <br>
+                                <label for="">NOMBRE CLIENTE</label>
+                                <input type="text" class="form-control" name="" ng-model="$ctrl.cliente">
+                                <br>
+                                <label for="">HORA RECIBIDO (hh:mm)</label>
+                                <input type="text" class="form-control" name="" ng-model="$ctrl.horaRecibido">
+                                <br>
+                                <label for="">HORA ENTREGA (hh:mm)</label>
+                                <input type="text" class="form-control" name="" ng-model="$ctrl.horaEntrega">
+                                <br>
+                                <label for="">TELÉFONO</label>
+                                <input type="text" class="form-control" name="" ng-model="$ctrl.telefono">
+                                <br>
+                                <label for="">PAGADO</label>
+                                SI: <input type="radio" ng-model="$ctrl.pagado" value="SI"> |
+                                NO: <input type="radio" ng-model="$ctrl.pagado" value="NO">
+                                <button type="button" ng-click="$ctrl.finalizarPedido()" ng-disabled="$ctrl.itemsPedido.length === 0 || $ctrl.cliente==='' || $ctrl.horaEntrega==='' || $ctrl.horaRecibido===''" class="btn btn-primary btn-block pull-right" name="button">FINALIZAR PEDIDO</button>
+                            </div><!-- /.col-lg-6 -->
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col col-lg-4">
+                    <h3 class="alert alert-success">VENTA ACTUAL</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <tr>
+                                <th>Empanada</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                            <tr ng-repeat="venta in $ctrl.ventas track by $index">
+                                <td>{{venta.nombre}}</td>
+                                <td><span class="badge">{{venta.cantidad}}</span></td>
+                                <td><strong><i>{{venta.cantidad*venta.precio | currency:"CLP$":0}}</i></strong></td>
+                                <td><button type="button" class="btn btn-xs btn-danger" ng-click="$ctrl.eliminar(venta.id,$index)" name="button">Eliminar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <mark>TOTAL A PAGAR:</mark> <strong><span style="font-size:20px"> {{$ctrl.total | currency:"CLP$":0}}</span></strong>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <mark>EFECTIVO:</mark>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="input-group">
+                              <span class="input-group-addon" id="sizing-addon1">$</span>
+                              <input type="number" class="form-control" ng-model="$ctrl.efectivo" id="efectivo" ng-disabled="$ctrl.total===0" placeholder="">
+                            </div><!-- /input-group -->
+                        </div>
+                    </div>
+                     <br>
+                    <mark>VUELTO:</mark> <strong ng-show="$ctrl.efectivo>0"><span style="font-size:20px"> {{$ctrl.efectivo-$ctrl.total | currency:"CLP$":0}}</span></strong>
+                    <hr>
+                    <button type="button" class="btn btn-primary pull-right" ng-click="$ctrl.vender()" ng-disabled="$ctrl.ventas.length===0" name="button">VENDER</button>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+
+                <div class="col col-lg-12">
+                    <h3 class="alert alert-danger">PEDIDOS</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Telefono</th>
+                            <th>Hora recibido</th>
+                            <th>Items</th>
+                            <th>TOTAL</th>
+                            <th>Hora entrega</th>
+                            <th>Pagado</th>
+                            <th>Entregado</th>
+                            <th>Completado</th>
+                            <th>Bandejas horno</th>
+                        </tr>
+                        <tr ng-repeat="pedido in $ctrl.pedidos track by $index">
+                            <td>{{$index+1}}</td>
+                            <td>{{pedido.cliente}}</td>
+                            <td>{{pedido.telefono}}</td>
+                            <td>{{pedido.horaRecibido}}</td>
+                            <td>
+                                <ul>
+                                    <li ng-repeat="item in pedido.items track by $index">
+                                        {{item.nombre}} ----> <strong>{{item.cantidad}}</strong>---->({{item.total | currency:"CLP$":0}})
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>{{pedido.total | currency:"CLP$":0}}</td>
+                            <td>{{pedido.horaEntrega}}</td>
+                            <td>{{pedido.pagado}}</td>
+                            <td><button type="button" class="btn btn-xs btn-default" ng-class="{'btn-success':pedido.entregado, 'btn-default':!pedido.entregado }" ng-click="$ctrl.actualizarPedido(pedido,pedido.entregado = !pedido.entregado)" name="button">{{!pedido.entregado ? 'Pendiente' : 'Entregado'}}</button></td>
+                            <td><button type="button" class="btn btn-xs btn-default" ng-class="{'btn-success':pedido.completado, 'btn-danger':!pedido.completado }" ng-click="pedido.completado = !pedido.completado" name="button">{{pedido.completado ? 'SI' : 'NO'}}</button></td>
+                            <td><input type="text" ng-disabled="pedido.completado" class="form-control" name="" ng-model="pedido.bandejas"></td>
+                        </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="bower_components/angular/angular.min.js">
+    </script>
+    <script type="text/javascript" src="app.js">
+    </script>
+</html>
